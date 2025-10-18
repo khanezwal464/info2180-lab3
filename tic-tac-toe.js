@@ -20,7 +20,7 @@ window.addEventListener("DOMContentLoaded", () => {
   // Adding click event to each square
   squares.forEach((square, index) => {
     square.addEventListener("click", () => {
-      // Prevent overwriting a square
+      // Prevent overwriting a square or continuing after game is over
       if (gameOver || gameState[index] !== null) return;
 
       // Mark the square 
@@ -28,10 +28,18 @@ window.addEventListener("DOMContentLoaded", () => {
       square.classList.add(currPlayer);
       gameState[index] = currPlayer;
 
-      //Check if the current move wins the game
+      // Check if the current move wins the game
       if (checkWin()) {
-        statusDiv.textContent = `Congratulations! ${currPlayer} is the Winner!`;
-        statusDiv.classList.add("you-won") ;
+        statusDiv.textContent = `Congratulations! ${currPlayer} is the Winner! 🎉`;
+        statusDiv.classList.add("you-won");
+        gameOver = true;
+        return;
+      }
+
+      // ✅ Check if all squares are filled but no winner (draw)
+      if (!gameState.includes(null)) {
+        statusDiv.textContent = `It's a draw! ${currPlayer} could not win. Try again!`;
+        statusDiv.classList.remove("you-won");
         gameOver = true;
         return;
       }
@@ -50,15 +58,23 @@ window.addEventListener("DOMContentLoaded", () => {
     square.addEventListener("mouseout", () => {
       square.classList.remove("hover");
     });
- 
+  });
 
-  statusDiv.textContent = "Hover a square with your mouse and click to play either an X or an O.";
+  // ✅ New Game button logic
+  newGameBtn.addEventListener("click", () => {
+    gameState.fill(null);
+    squares.forEach(square => {
+      square.textContent = "";
+      square.className = "square"; // Reset styling
+    });
+
+    statusDiv.textContent = "Hover a square with your mouse and click to play either an X or an O.";
     statusDiv.classList.remove("you-won");
-    currPlayer = "X"
+    currPlayer = "X";
     gameOver = false;
- });
+  });
 
-  // Checking for winner
+  // ✅ Check for winner function
   function checkWin() {
     const winningMoves = [
       [0, 1, 2], [3, 4, 5], [6, 7, 8], // rows
@@ -79,4 +95,4 @@ window.addEventListener("DOMContentLoaded", () => {
     });
   }
 
-}); //closing DOM
+}); // Closing DOMContentLoaded
